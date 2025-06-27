@@ -51,50 +51,34 @@ export function AddMCPServerDialog({
         setValidationError("Missing `mcpServers` in JSON");
         return;
       }
-      setValidationError(null);
-      try {
-        const parsed = JSON.parse(value);
-        if (!("mcpServers" in parsed)) {
-          setValidationError(t("mcpConfigDescription"));
-          return;
-        }
-      } catch {
-        setValidationError(t("invalidJson", { defaultValue: "Invalid JSON" }));
-        return;
-      }
-      const result = MCPConfigSchema.safeParse(JSON.parse(value));
-      if (!result.success) {
-        if (result.error.errors[0]) {
-          const error = result.error.errors[0];
-          if (error.code === "invalid_union") {
-            if (error.unionErrors[0]?.errors[0]) {
-              setValidationError(error.unionErrors[0].errors[0].message);
-              return;
-            }
+    } catch {
+      setValidationError(t("invalidJson"));
+      return;
+    }
+    const result = MCPConfigSchema.safeParse(JSON.parse(value));
+    if (!result.success) {
+      if (result.error.errors[0]) {
+        const error = result.error.errors[0];
+        if (error.code === "invalid_union") {
+          if (error.unionErrors[0]?.errors[0]) {
+            setValidationError(error.unionErrors[0].errors[0].message);
+            return;
           }
         }
-        const errorMessage =
-          result.error.errors[0]?.message ??
-          t("validationFailed", { defaultValue: "Validation failed" });
-        setValidationError(errorMessage);
-        return;
       }
-
-      const keys = Object.keys(result.data.mcpServers);
-      if (keys.length === 0) {
-        setValidationError(
-          t("missingServerName", {
-            defaultValue: "Missing server name in `mcpServers`",
-          }),
-        );
-        return;
-      }
-    } catch {
-      
+      const errorMessage =
+        result.error.errors[0]?.message ?? t("validationFailed");
+      setValidationError(errorMessage);
+      return;
     }
-  },
-    [t],
-  );
+
+    const keys = Object.keys(result.data.mcpServers);
+    if (keys.length === 0) {
+      setValidationError(t("missingServerName"));
+      return;
+    }
+  }, [t]);
+
   const handleAdd = useCallback(async () => {
     abortControllerRef.current = new AbortController();
     const config = MCPConfigSchema.parse(JSON.parse(input));
