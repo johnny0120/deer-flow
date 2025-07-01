@@ -161,7 +161,10 @@ class TestGenericSearchTool:
         GenericSearchTool()
 
         mock_logger.warning.assert_called_once()
-        assert "Alibaba Cloud access credentials are not configured" in mock_logger.warning.call_args[0][0]
+        assert (
+            "Alibaba Cloud access credentials are not configured"
+            in mock_logger.warning.call_args[0][0]
+        )
 
     def test_validate_query_empty(self, search_tool):
         """Test empty query validation"""
@@ -320,7 +323,7 @@ class TestGenericSearchTool:
     def test_run_validation_error(self, search_tool):
         """Test synchronous search validation error"""
         result = search_tool._run("")
-    
+
         assert isinstance(result, str)
         assert "Error: Search keyword cannot be empty" in result
         search_tool.client.generic_search.assert_not_called()
@@ -366,7 +369,7 @@ class TestGenericSearchTool:
     async def test_arun_validation_error(self, search_tool):
         """Test asynchronous search validation error"""
         result = await search_tool._arun("")
-    
+
         assert isinstance(result, str)
         assert "Error: Search keyword cannot be empty" in result
         search_tool.client.generic_search_async.assert_not_called()
@@ -407,7 +410,9 @@ class TestGenericSearchTool:
         mock_result.search_information = None
 
         with patch("src.tools.generic_search.logger") as mock_logger:
-            result = search_tool._handle_search_results(mock_result, "empty result test")
+            result = search_tool._handle_search_results(
+                mock_result, "empty result test"
+            )
 
             assert isinstance(result, list)
             assert len(result) == 0

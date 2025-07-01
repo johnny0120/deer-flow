@@ -38,12 +38,16 @@ class GenericSearchInput(BaseModel):
         description="Industry search, multiple industries separated by commas. Supported values: finance, law, medical, internet, tax, news_province, news_center",
     )
     page: int | None = Field(default=1, description="Page number, default is 1")
-    return_main_text: bool | None = Field(default=True, description="Whether to return the main text of the webpage")
+    return_main_text: bool | None = Field(
+        default=True, description="Whether to return the main text of the webpage"
+    )
     return_markdown_text: bool | None = Field(
         default=True,
         description="Whether to return the webpage content in markdown format",
     )
-    enable_rerank: bool | None = Field(default=True, description="Whether to enable reranking")
+    enable_rerank: bool | None = Field(
+        default=True, description="Whether to enable reranking"
+    )
 
 
 class GenericSearchTool(BaseTool):
@@ -101,7 +105,9 @@ class GenericSearchTool(BaseTool):
     ) -> list[dict[str, Any]]:
         """Parse search results into standard format."""
         page_items = result.page_items or []
-        logger.info(f"{operation}: {result.request_id}, number of results: {len(page_items)}")
+        logger.info(
+            f"{operation}: {result.request_id}, number of results: {len(page_items)}"
+        )
 
         # Parse and limit the number of results
         parsed_results = [
@@ -127,12 +133,14 @@ class GenericSearchTool(BaseTool):
             "publish_time": item.publish_time,
             "score": item.score,
             "card_type": item.card_type or "",
-            "hostname": item.page_map.get("hostname")
-            if isinstance(item.page_map, dict)
-            else "",
-            "site_label": item.page_map.get("siteLabel")
-            if isinstance(item.page_map, dict)
-            else "",
+            "hostname": (
+                item.page_map.get("hostname") if isinstance(item.page_map, dict) else ""
+            ),
+            "site_label": (
+                item.page_map.get("siteLabel")
+                if isinstance(item.page_map, dict)
+                else ""
+            ),
         }
 
         # Add optional content
