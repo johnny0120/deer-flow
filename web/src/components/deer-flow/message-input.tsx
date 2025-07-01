@@ -21,8 +21,9 @@ import "~/styles/prosemirror.css";
 import { resourceSuggestion } from "./resource-suggestion";
 import React, { forwardRef, useEffect, useMemo, useRef } from "react";
 import type { Resource } from "~/core/messages";
-import { useRAGProvider } from "~/core/api/hooks";
+import { useConfig } from "~/core/api/hooks";
 import { LoadingOutlined } from "@ant-design/icons";
+import type { DeerFlowConfig } from "~/core/config";
 
 export interface MessageInputRef {
   focus: () => void;
@@ -33,6 +34,8 @@ export interface MessageInputRef {
 export interface MessageInputProps {
   className?: string;
   placeholder?: string;
+  loading?: boolean;
+  config?: DeerFlowConfig | null;
   onChange?: (markdown: string) => void;
   onEnter?: (message: string, resources: Array<Resource>) => void;
 }
@@ -76,7 +79,10 @@ function formatItem(item: JSONContent): {
 }
 
 const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
-  ({ className, onChange, onEnter }: MessageInputProps, ref) => {
+  (
+    { className, loading, config, onChange, onEnter }: MessageInputProps,
+    ref,
+  ) => {
     const t = useTranslations("messageInput");
     const editorRef = useRef<Editor>(null);
     const handleEnterRef = useRef<
@@ -117,8 +123,6 @@ const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
       handleEnterRef.current = onEnter;
     }, [onEnter]);
 
-    const { provider, loading } = useRAGProvider();
-
     const extensions = useMemo(() => {
       const extensions = [
         StarterKit,
@@ -134,7 +138,7 @@ const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
         }),
         Placeholder.configure({
           showOnlyCurrent: false,
-          placeholder: provider ? t("placeholderWithRag") : t("placeholder"),
+          placeholder: config?.rag.provider ? t("placeholderWithRag") : t("placeholder"),
           emptyEditorClass: "placeholder",
         }),
         Extension.create({
@@ -154,7 +158,7 @@ const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
           },
         }),
       ];
-      if (provider) {
+      if (config?.rag.provider) {
         extensions.push(
           Mention.configure({
             HTMLAttributes: {
@@ -165,7 +169,7 @@ const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
         );
       }
       return extensions;
-    }, [provider]);
+    }, [config]);
 
     if (loading) {
       return (
