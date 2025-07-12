@@ -28,6 +28,7 @@
     "title": "DeerFlow Settings",
     "description": "Manage your DeerFlow settings here.",
     "addServers": "Add Servers",
+    "cancel": "Cancel",
     "addNewMCPServers": "Add New MCP Servers",
     "mcpConfigDescription": "DeerFlow uses the standard JSON MCP config to create a new server.",
     "pasteConfigBelow": "Paste your config below and click \"Add\" to add new servers.",
