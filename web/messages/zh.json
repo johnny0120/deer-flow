@@ -27,6 +27,7 @@
   "settings": {
     "title": "DeerFlow 设置",
     "description": "在这里管理您的 DeerFlow 设置。",
+    "cancel": "取消",
     "addServers": "添加服务器",
     "addNewMCPServers": "添加新的 MCP 服务器",
     "mcpConfigDescription": "DeerFlow 使用标准 JSON MCP 配置来创建新服务器。",
